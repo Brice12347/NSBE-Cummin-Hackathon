@@ -1,8 +1,9 @@
 import getpass
 import os
-if not os.environ.get("OPENAI_API_KEY"):
-    os.environ["OPENAI_API_KEY"] = getpass.getpass("Enter API key for OpenAI: ")
+if not os.environ.get("GROQ_API_KEY"):
+    os.environ["GROQ_API_KEY"] = getpass.getpass("Enter API key for Groq: ")
 
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.chat_models import init_chat_model
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -14,13 +15,15 @@ from langchain_core.documents import Document
 from typing_extensions import List, TypedDict
 
 # Initialize components
-llm = init_chat_model("gpt-4o-mini", model_provider="openai")
-embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
+llm = init_chat_model("llama3-8b-8192", model_provider="groq")
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2", )
 
 # Load and split documents
-file_path = "flask-server/data/Champion_Lair_Resume.pdf"
+file_path = "./data/Champion_Lair_Resume.pdf"
 loader = PyPDFLoader(file_path)
 docs = loader.load()
+# print(f'the champ doc: {docs[0]}')
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 all_splits = text_splitter.split_documents(docs)
 
