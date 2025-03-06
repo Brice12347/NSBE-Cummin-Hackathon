@@ -8,7 +8,17 @@ import { motion } from "motion/react"
 
 const iconSize = 40;
 
-function Sidebar(){
+function Sidebar({setPageToLoad}){
+
+    const handleHome = () => {
+        setPageToLoad("dashboard");
+        console.log("home")
+    };
+
+    const handleReport = () => {
+        setPageToLoad("reportGenerator");
+        console.log("report")
+    };
 
     return(
         <motion.div 
@@ -29,6 +39,7 @@ function Sidebar(){
             gap: "2rem",
         }}>
             <motion.div 
+            onClick={handleHome}
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
@@ -42,6 +53,7 @@ function Sidebar(){
                 <Image src={cumminsLogo} width={iconSize} height={iconSize}/>
             </motion.div>
             <motion.div
+            onClick={handleHome}
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
@@ -55,6 +67,7 @@ function Sidebar(){
                 <Image src={homeIcon} width={iconSize} height={iconSize}/>
             </motion.div>
             <motion.div
+            onClick={handleReport}
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
