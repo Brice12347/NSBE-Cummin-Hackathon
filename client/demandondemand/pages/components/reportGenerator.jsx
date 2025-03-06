@@ -1,14 +1,52 @@
 import React, { useState } from "react";
 import stylings from "./stylings";
-import { motion, AnimatePresence } from "motion/react"
+import { motion, AnimatePresence } from "motion/react";
 
 function ReportGenerator(){
     const [isPromptVisible, setIsPromptVisible] = useState(true);
+    const [chatResponse, setChatResponse] = useState({ key_findings: [], recommendations: [] });
+    const [isLoading, setIsLoading] = useState(false);
+    const [userInput, setUserInput] = useState("");
+
+    const answerPrompt = async () => {
+        setIsLoading(true);
+        
+        // Use the state variable from the textarea instead of an undefined prompt variable.
+        const userQuestion = userInput;
+        
+        const response = await fetch("http://127.0.0.1:8080/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: userQuestion
+            }),
+        });
+        
+        const data = await response.json();
+
+        // If the answer is returned as a string, we split it into an array.
+        const keyFindings = typeof data.answer.key_findings === 'string' 
+            ? data.answer.key_findings.split('\n').filter(line => line.trim() !== "")
+            : data.answer.key_findings;
+        const recommendations = typeof data.answer.recommendations === 'string' 
+            ? data.answer.recommendations.split('\n').filter(line => line.trim() !== "")
+            : data.answer.recommendations;
+
+        setChatResponse({
+            key_findings: keyFindings,
+            recommendations: recommendations
+        });
+        
+        setIsLoading(false);
+    };
 
     const handleGenerateButton = () => {
         setIsPromptVisible(false);
+        answerPrompt();
     }
-
+    
     return (
         <section style={{
             display: "flex",
@@ -16,9 +54,9 @@ function ReportGenerator(){
             alignItems: "center",
             width: "100%",
             height: "100%",
-            position: "relative", // Add this for absolute positioning context
+            position: "relative",
         }}>
-            <AnimatePresence mode="wait"> {/* Add mode="wait" to ensure one exits before the other enters */}
+            <AnimatePresence mode="wait">
                 {isPromptVisible ? (
                     <motion.div 
                         key="promptForm"
@@ -31,50 +69,53 @@ function ReportGenerator(){
                             flexDirection: "column",
                             justifyContent: "center",
                             alignItems: "center",
-                            position: "absolute", // Position absolutely
-                            top: "40%", // Center vertically
-                            left: "30%", // Center horizontally
-                            transform: "translate(-50%, -50%)", // Adjust for true centering
+                            position: "absolute",
+                            top: "40%",
+                            left: "30%",
+                            transform: "translate(-50%, -50%)",
                         }}
                     >
-                        <motion.textarea placeholder="Provide context to generate your forecasting report..."
-                        initial={{ opacity: 0, y: 50, scale: 0.8 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        transition={{ duration: 0.2 }}
-                        style={{
-                            width: "30rem",
-                            height: "10rem",
-                            border: `1px solid ${stylings.secondaryBackground}`,
-                            textDecoration: "none",
-                            borderRadius: "1.5rem",
-                            padding: "1.2rem",
-                            outline: "none",
-                        }}
-                        >
-                        </motion.textarea>
+                        <motion.textarea 
+                            placeholder="Provide context to generate your forecasting report..."
+                            initial={{ opacity: 0, y: 50, scale: 0.8 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 0.2 }}
+                            style={{
+                                width: "30rem",
+                                height: "10rem",
+                                border: `1px solid ${stylings.secondaryBackground}`,
+                                textDecoration: "none",
+                                borderRadius: "1.5rem",
+                                padding: "1.2rem",
+                                outline: "none",
+                            }}
+                            onChange={(e) => setUserInput(e.target.value)}
+                            value={userInput}
+                        />
                         <motion.button 
-                        onClick={handleGenerateButton}
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 0.8, y: 0 }}
-                        transition={{ duration: 0.2 }}
-                        whileHover={{ 
-                            scale: 1.2,
-                            rotate: 10,
-                            opacity: 1,
-                          }}
-                        style={{
-                            textDecoration: "none",
-                            outline: "none",
-                            border: `1px solid ${stylings.secondaryBackground}`,
-                            borderRadius: "0.4rem",
-                            padding: "0.5rem 1rem",
-                            marginTop: "1rem",
-                            width: "fit-content",
-                            backgroundColor: stylings.mainred,
-                            fontSize: "1.2rem",
-                            fontWeight: "700",
-                            cursor: "pointer",
-                        }}>
+                            onClick={handleGenerateButton}
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 0.8, y: 0 }}
+                            transition={{ duration: 0.2 }}
+                            whileHover={{ 
+                                scale: 1.2,
+                                rotate: 10,
+                                opacity: 1,
+                            }}
+                            style={{
+                                textDecoration: "none",
+                                outline: "none",
+                                border: `1px solid ${stylings.secondaryBackground}`,
+                                borderRadius: "0.4rem",
+                                padding: "0.5rem 1rem",
+                                marginTop: "1rem",
+                                width: "fit-content",
+                                backgroundColor: stylings.mainred,
+                                fontSize: "1.2rem",
+                                fontWeight: "700",
+                                cursor: "pointer",
+                            }}
+                        >
                             Generate Report
                         </motion.button>
                     </motion.div>
@@ -93,10 +134,10 @@ function ReportGenerator(){
                             minHeight: "500px",
                             boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
                             color: "#333",
-                            position: "absolute", // Position absolutely
-                            top: "18%", // Center vertically
-                            left: "18%", // Center horizontally
-                            transform: "translate(-50%, -50%)", // Adjust for true centering
+                            position: "absolute",
+                            top: "18%",
+                            left: "18%",
+                            transform: "translate(-50%, -50%)",
                         }}
                     >
                         <h2 style={{ 
@@ -119,10 +160,13 @@ function ReportGenerator(){
                             </h3>
                             
                             <ul style={{ marginLeft: "1.5rem" }}>
-                                <li>Projected 12% increase in fuel demand over next quarter</li>
-                                <li>Seasonal variations indicate peak usage in summer months</li>
-                                <li>Regional demand patterns suggest focusing distribution in western markets</li>
-                                <li>Price elasticity analysis shows minimal impact from recent cost fluctuations</li>
+                                {chatResponse.key_findings.length > 0 ? (
+                                    chatResponse.key_findings.map((finding, index) => (
+                                        <li key={index}>{finding}</li>
+                                    ))
+                                ) : (
+                                    <li>No key findings available.</li>
+                                )}
                             </ul>
                             
                             <h3 style={{ 
@@ -133,7 +177,15 @@ function ReportGenerator(){
                                 Recommendations
                             </h3>
                             
-                            <p>Consider increasing inventory levels by 15% to accommodate projected growth while maintaining optimal service levels. Implement dynamic pricing strategies in non-elastic markets to maximize margin opportunities.</p>
+                            <ul style={{ marginLeft: "1.5rem" }}>
+                                {chatResponse.recommendations.length > 0 ? (
+                                    chatResponse.recommendations.map((rec, index) => (
+                                        <li key={index}>{rec}</li>
+                                    ))
+                                ) : (
+                                    <li>No recommendations available.</li>
+                                )}
+                            </ul>
                         </div>
                         
                         <motion.button

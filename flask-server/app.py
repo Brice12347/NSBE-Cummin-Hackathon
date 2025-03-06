@@ -13,10 +13,12 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.graph import START, StateGraph
 from langchain_core.documents import Document
 from typing_extensions import List, TypedDict
+from flask_cors import CORS
 
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
+CORS(app)
 
 os.environ["GROQ_API_KEY"] = "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"
 # Initialize components
@@ -104,8 +106,8 @@ def generate(state: MessagesState):
         "You are an Expert Financial Advisor for question-answering tasks. "
         "Use the following pieces of retrieved context about Cummins Full Year 2024 results to answer "
         "the question. If you don't know the answer, say that you "
-        "don't know. Use three sentences maximum and keep the "
-        "answer concise."
+        "don't know. Format the answer into 2 parts"
+        "Key Findings and Recommendations"
         "\n\n"
         f"{docs_content}"
     )
@@ -150,11 +152,17 @@ def get_chatbot_response(input_message):
         )
         
         # Get the final AI message
-        final_message = response["messages"][-1]
+        final_message = response["messages"][-1].content
+        
+        # Split final_message into key findings and recommendations
+        key_findings, recommendations = extract_key_findings_and_recommendations(final_message)
         
         # Initialize response dictionary
         result = {
-            "answer": final_message.content,
+            "answer": {
+                "key_findings": key_findings,
+                "recommendations": recommendations
+            },
             "sources": []
         }
         
@@ -162,18 +170,15 @@ def get_chatbot_response(input_message):
         tool_messages = [msg for msg in response["messages"] if msg.type == "tool"]
         if tool_messages:
             for tool_msg in tool_messages:
-                # Parse the source information from the tool message
                 if hasattr(tool_msg, 'content') and tool_msg.content:
                     sources = tool_msg.content.split("\n\n")
                     for source in sources:
                         if source.startswith("Source:"):
-                            # Extract source file and relevant content
                             source_parts = source.split("Content:")
                             if len(source_parts) > 1:
                                 file_info = source_parts[0].replace("Source: ", "").strip()
                                 full_content = source_parts[1].strip()
                                 
-                                # Extract just the filename from the metadata dictionary
                                 import ast
                                 try:
                                     metadata = ast.literal_eval(file_info)
@@ -181,7 +186,6 @@ def get_chatbot_response(input_message):
                                 except:
                                     filename = file_info
                                 
-                                # Extract only the most relevant part (using query keywords)
                                 relevant_content = extract_relevant_content(input_message, full_content)
                                 
                                 result["sources"].append({
@@ -191,13 +195,14 @@ def get_chatbot_response(input_message):
         print(result)
         return result
     except Exception as e:
-        # Return an error message if something goes wrong
         return {
-            "answer": f"I'm sorry, I encountered an error while processing your question. Please try rephrasing your question or ask something else.",
+            "answer": {
+                "key_findings": "I'm sorry, I encountered an error while processing your question.",
+                "recommendations": "Please try rephrasing your question or ask something else."
+            },
             "sources": [],
             "error": str(e)
         }
-
 def extract_relevant_content(query, content, max_length=150):
     """Extract the most relevant portion of content based on query keywords"""
     # Convert query to lowercase and split into keywords
@@ -237,62 +242,32 @@ def extract_relevant_content(query, content, max_length=150):
     
     return result
 
+def extract_key_findings_and_recommendations(text):
+    """Splits the AI response into key findings and recommendations."""
+    parts = text.split("Recommendations:")
+    key_findings = parts[0].strip() if len(parts) > 0 else ""
+    recommendations = parts[1].strip() if len(parts) > 1 else ""
+    return key_findings, recommendations
+
+
 # this is for a test
 get_chatbot_response("What were Cummins 4th quarter revenues")
 
-# @app.route('/chat', methods=['POST'])
-# def chat():
-#     data = request.get_json()
-#     user_message = data.get('message', '')
-    
-#     if not user_message:
-#         return jsonify({"error": "No message provided"}), 400
-    
-#     response = get_chatbot_response(user_message)
-#     return jsonify(response)
+@app.route("/chat", methods=["POST"])
+def chat():
+    try:
+        data = request.get_json()
+        user_message = data.get("message", "")
 
-# if __name__ == '__main__':
-#     app.run(debug=True, port=8080)
+        if not user_message:
+            return jsonify({"error": "Message is required"}), 400
 
-# input_message = "Hello"
+        response = get_chatbot_response(user_message)
 
-# for step in graph.stream(
-#     {"messages": [{"role": "user", "content": input_message}]},
-#     stream_mode="values",
-# ):
-#     step["messages"][-1].pretty_print()
+        return jsonify(response)
 
-# input_message = "What University does Lair attend?"
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-# for step in graph.stream(
-#     {"messages": [{"role": "user", "content": input_message}]},
-#     stream_mode="values",
-# ):
-#     step["messages"][-1].pretty_print()
-
-# # Define prompt for question-answering
-# prompt = hub.pull("rlm/rag-prompt")
-
-# # Define state for application
-# class State(TypedDict):
-#     question: str
-#     context: List[Document]
-#     answer: str
-
-# # Define application steps
-# def retrieve(state: State):
-#     retrieved_docs = vector_store.similarity_search(state["question"])
-#     return {"context": retrieved_docs}
-
-# def generate(state: State):
-#     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
-#     messages = prompt.invoke({"question": state["question"], "context": docs_content})
-#     response = llm.invoke(messages)
-#     return {"answer": response.content}
-
-# # Compile application and test
-# graph_builder = StateGraph(State).add_sequence([retrieve, generate])
-# graph_builder.add_edge(START, "retrieve")
-# graph = graph_builder.compile()
-# response = graph.invoke({"question": "What is school does Lair go to?"})
-# print(response["answer"])
+if __name__ == '__main__':
+    app.run(debug=True, port=8080)
