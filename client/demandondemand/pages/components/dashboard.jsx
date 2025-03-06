@@ -3,6 +3,8 @@ import stylings from "./stylings.js"
 import Card from "./card.jsx";
 import Image from "next/image.js";
 import bannerImg from "../images/bannerVeryDark.png"
+import newsArticle1 from "../images/newsArticle1.png"
+import newsArticle2 from "../images/newsArticle2.png"
 import { PieChart } from '@mui/x-charts/PieChart';
 import Box from '@mui/material/Box';
 import { SparkLineChart } from '@mui/x-charts/SparkLineChart';
@@ -138,18 +140,90 @@ function Dashboard(){
                 </div>
                 <div style={{...rowDiv}}>
                     <Card>
-                        <div style={{width: "fit-content"}}>
-                            <span>Could also just be another news thing(white), could actually link to article</span>
-                            <BarChart
-                                xAxis={[{ scaleType: 'band', data: ['group A', 'group B', 'group C'] }]}
-                                series={[{ data: [4, 3, 5] }, { data: [1, 6, 3] }, { data: [2, 5, 6] }]}
-                                width={300}
-                                height={300}
-                            />
+                    <div 
+                    onClick={() => {
+                        window.open("https://www.ttnews.com/articles/tariff-threat-truck-industry", "_blank");
+                      }}
+                    style={{
+                        position: "relative",
+                        width: "310px",
+                        height: "480px",
+                        backgroundImage: `url(${newsArticle2.src})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "left",
+                        backgroundRepeat: "no-repeat",
+                        padding: "2rem",
+                        color: "white",
+                        overflow: "hidden", // Ensure the pseudo-element stays within bounds
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "flex-end",
+                    }}
+                    >
+                        {/* Red blur/drop shadow effect */}
+                        <div style={{
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "200px", // Adjust the height of the effect
+                            background: "linear-gradient(to top, rgba(255, 41, 31, 0.7) 0%, rgba(255, 41, 31, 0) 100%)",
+                            pointerEvents: "none", // Makes the div non-interactive
+                            zIndex: 1, // Places it above the background but below the content
+                        }}></div>
+                        
+                        {/* Content with higher z-index to appear above the effect */}
+                        <div style={{ position: "relative", zIndex: 2 }}>
+                            <span style={{fontWeight: "800", fontSize: "1.5rem"}}>Trucking Tarriffs</span>
+                            <br></br>
+                            <div style={{ paddingLeft: "0.2rem", fontSize: "1rem", opacity: "0.8"}}>
+                            Latest new in 
+                            </div>
                         </div>
+                    </div>
                     </Card>
                     <Card>
-                        News/Article (red)
+                    <div 
+                    onClick={() => {
+                        window.open("https://fosterfuels.com/blog/2025-fuel-price-forecasts/", "_blank");
+                      }}
+                    style={{
+                        position: "relative",
+                        width: "310px",
+                        height: "480px",
+                        backgroundImage: `url(${newsArticle1.src})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "left",
+                        backgroundRepeat: "no-repeat",
+                        padding: "2rem",
+                        color: "white",
+                        overflow: "hidden", // Ensure the pseudo-element stays within bounds
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "flex-end",
+                    }}
+                    >
+                        {/* Red blur/drop shadow effect */}
+                        <div style={{
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "200px", // Adjust the height of the effect
+                            background: "linear-gradient(to top, rgba(255, 41, 31, 0.7) 0%, rgba(255, 41, 31, 0) 100%)",
+                            pointerEvents: "none", // Makes the div non-interactive
+                            zIndex: 1, // Places it above the background but below the content
+                        }}></div>
+                        
+                        {/* Content with higher z-index to appear above the effect */}
+                        <div style={{ position: "relative", zIndex: 2 }}>
+                            <span style={{fontWeight: "800", fontSize: "1.5rem"}}>Latest Fuel Trends</span>
+                            <br></br>
+                            <div style={{ paddingLeft: "0.2rem", fontSize: "1rem", opacity: "0.8"}}>
+                            Latest new in 
+                            </div>
+                        </div>
+                    </div>
                     </Card>
                 </div>
             </div>
