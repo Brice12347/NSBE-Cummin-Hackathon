@@ -58,7 +58,7 @@ function Dashboard(){
     return (
         <section style={{ 
             ...colDiv,
-            width: "100%",
+            width: "90%",
             padding: "2rem",
         }}>
             {/* First Row */}
@@ -133,7 +133,7 @@ function Dashboard(){
                                 alignItems: "center",
                                 padding: "1rem",
                             }}>
-                                This is some more relevent news or information
+                               
                             </div>
                         </Card>
                     </div>
@@ -177,7 +177,7 @@ function Dashboard(){
                             <span style={{fontWeight: "800", fontSize: "1.5rem"}}>Trucking Tarriffs</span>
                             <br></br>
                             <div style={{ paddingLeft: "0.2rem", fontSize: "1rem", opacity: "0.8"}}>
-                            Latest new in 
+                            Latest news in 
                             </div>
                         </div>
                     </div>
@@ -220,7 +220,7 @@ function Dashboard(){
                             <span style={{fontWeight: "800", fontSize: "1.5rem"}}>Latest Fuel Trends</span>
                             <br></br>
                             <div style={{ paddingLeft: "0.2rem", fontSize: "1rem", opacity: "0.8"}}>
-                            Latest new in 
+                            Latest news in 
                             </div>
                         </div>
                     </div>
@@ -323,6 +323,7 @@ function Dashboard(){
                         },
                     }}
                 />
+                
                 </Card>
             </div>
         </section>

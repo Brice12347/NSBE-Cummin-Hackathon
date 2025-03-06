@@ -22,7 +22,7 @@ CORS(app)
 
 os.environ["GROQ_API_KEY"] = "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"
 # Initialize components
-llm = init_chat_model("llama3-8b-8192", model_provider="groq")
+llm = init_chat_model("llama-3.3-70b-versatile", model_provider="groq")
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2", )
@@ -106,8 +106,9 @@ def generate(state: MessagesState):
         "You are an Expert Financial Advisor for question-answering tasks. "
         "Use the following pieces of retrieved context about Cummins Full Year 2024 results to answer "
         "the question. If you don't know the answer, say that you "
-        "don't know. Format the answer into 2 parts"
-        "Key Findings and Recommendations"
+        "don't know. BUT DO NOT SAY IT IN THE FIRST PERSON. Format the answer into 4 parts"
+        "1. Analysis 2. Key Findings 3. Recommendations for Supply Chain Strategies"
+        "In your Key Findings answer in 5 paragraphs"
         "\n\n"
         f"{docs_content}"
     )
@@ -244,7 +245,7 @@ def extract_relevant_content(query, content, max_length=150):
 
 def extract_key_findings_and_recommendations(text):
     """Splits the AI response into key findings and recommendations."""
-    parts = text.split("Recommendations:")
+    parts = text.split("##Recommendations:")
     key_findings = parts[0].strip() if len(parts) > 0 else ""
     recommendations = parts[1].strip() if len(parts) > 1 else ""
     return key_findings, recommendations

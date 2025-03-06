@@ -169,7 +169,7 @@ function ReportGenerator(){
                                 )}
                             </ul>
                             
-                            <h3 style={{ 
+                            {/* <h3 style={{ 
                                 marginTop: "1.5rem", 
                                 fontSize: "1.4rem",
                                 color: stylings.mainred
@@ -185,7 +185,7 @@ function ReportGenerator(){
                                 ) : (
                                     <li>No recommendations available.</li>
                                 )}
-                            </ul>
+                            </ul> */}
                         </div>
                         
                         <motion.button
