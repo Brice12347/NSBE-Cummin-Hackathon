@@ -238,21 +238,21 @@ def extract_relevant_content(query, content, max_length=150):
     return result
 
 # this is for a test
-# get_chatbot_response("What were Cummins 4th quarter revenues")
+get_chatbot_response("What were Cummins 4th quarter revenues")
 
-@app.route('/chat', methods=['POST'])
-def chat():
-    data = request.get_json()
-    user_message = data.get('message', '')
+# @app.route('/chat', methods=['POST'])
+# def chat():
+#     data = request.get_json()
+#     user_message = data.get('message', '')
     
-    if not user_message:
-        return jsonify({"error": "No message provided"}), 400
+#     if not user_message:
+#         return jsonify({"error": "No message provided"}), 400
     
-    response = get_chatbot_response(user_message)
-    return jsonify(response)
+#     response = get_chatbot_response(user_message)
+#     return jsonify(response)
 
-if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+# if __name__ == '__main__':
+#     app.run(debug=True, port=8080)
 
 # input_message = "Hello"
 
