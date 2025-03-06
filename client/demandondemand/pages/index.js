@@ -9,9 +9,11 @@ export default function Home() {
 
   useEffect(() => {
     if (pageToLoad === "dashboard") {
+      console.log("work1")
       setPage(<Dashboard />);
     } else if (pageToLoad === "reportGenerator") {
       setPage(<ReportGenerator />);
+      console.log("work2")
     }
   }, [pageToLoad]);
 
@@ -23,8 +25,9 @@ export default function Home() {
         overflowY: "scroll",
         height: "100vh"
       }}>
-      <Sidebar/>
-      { page }
+      <Sidebar setPageToLoad={setPageToLoad}/>
+
+      {page}
       
     </div>
   );
