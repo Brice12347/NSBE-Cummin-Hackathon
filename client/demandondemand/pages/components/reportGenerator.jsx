@@ -94,8 +94,8 @@ function ReportGenerator(){
                             boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
                             color: "#333",
                             position: "absolute", // Position absolutely
-                            top: "20%", // Center vertically
-                            left: "20%", // Center horizontally
+                            top: "18%", // Center vertically
+                            left: "18%", // Center horizontally
                             transform: "translate(-50%, -50%)", // Adjust for true centering
                         }}
                     >
